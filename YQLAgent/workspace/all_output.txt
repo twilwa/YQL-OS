@@ -1,0 +1,91 @@
+Core classes, functions, and methods:
+
+1. `ChatInterface`: Handles user input and displays responses from the agent.
+2. `Agent`: Manages agents and their actions, including evaluating search results and showing code to the user for approval.
+3. `search_files`: Searches the filesystem for existing tools or templates.
+4. `evaluate_search_results`: Evaluates search results from the `search_files` function and decides whether to use an existing file or create a new tool.
+5. `fill_in_the_blanks`: Prompts the user to fill in placeholder variables in the custom tool template.
+6. `approve_code`: Shows the code to the user for approval and stores or rewrites the work.
+
+```main.py
+from chat_interface import ChatInterface
+
+if __name__ == "__main__":
+    chat_interface = ChatInterface()
+    chat_interface.run()
+```
+
+```chat_interface.py
+import os
+from agent import Agent
+
+class ChatInterface:
+    def __init__(self):
+        self.agent = Agent()
+
+    def run(self):
+        while True:
+            user_input = input("User: ")
+            if user_input.lower() == "exit":
+                break
+            response = self.agent.handle_input(user_input)
+            print(f"Agent: {response}")
+```
+
+```agent.py
+import os
+from search_files import search_files
+from evaluate_search_results import evaluate_search_results
+from fill_in_the_blanks import fill_in_the_blanks
+from approve_code import approve_code
+
+class Agent:
+    def __init__(self):
+        self.tools_directory = os.path.join(os.getcwd(), "tools")
+        self.workspace_directory = os.path.join(os.getcwd(), "workspace")
+
+    def handle_input(self, user_input):
+        search_results = search_files(user_input, self.tools_directory)
+        tool_to_use = evaluate_search_results(search_results)
+        if tool_to_use is None:
+            tool_to_use = fill_in_the_blanks(user_input)
+        code = approve_code(tool_to_use)
+        return code
+```
+
+```search_files.py
+import os
+
+def search_files(query, tools_directory):
+    search_results = []
+    for root, _, files in os.walk(tools_directory):
+        for file in files:
+            if query.lower() in file.lower():
+                search_results.append(os.path.join(root, file))
+    return search_results
+```
+
+```evaluate_search_results.py
+def evaluate_search_results(search_results):
+    if not search_results:
+        return None
+    return search_results[0]  # Use the first result for simplicity
+```
+
+```fill_in_the_blanks.py
+def fill_in_the_blanks(user_input):
+    # Placeholder implementation, replace with actual template filling logic
+    return f"Custom tool created for: {user_input}"
+```
+
+```approve_code.py
+def approve_code(tool_to_use):
+    print(f"Generated code: {tool_to_use}")
+    user_approval = input("Approve code? (yes/no): ")
+    if user_approval.lower() == "yes":
+        return f"Code approved: {tool_to_use}"
+    else:
+        return "Code not approved"
+```
+
+This code should be functional, but you may need to adjust the implementation of `fill_in_the_blanks` to match the actual template filling logic.

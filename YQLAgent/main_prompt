@@ -1,0 +1,14 @@
+We're building a chat interface wherein the langchain library is used to create agents that either find the correct existing tool, or create a tool, in response to the user's query. It should be able to search and modify two directories, it's own 'langchain' library, likely in [root]\venv\lib\python3.10\site-packages, as well as a 'tools' directory. another 'workspace' directory can be used as a staging area for other files it creates. The simple webapp frontend should list created or default agents, tools, or chains. It should probably start with a ReACT agent with tool retrieval for online, vector database, and filesystem search. We'll use Vectara for our vector database.
+
+Here's a brief summary of each component's responsibility:
+
+1. `ChatInterface`: This class handles user input and displays responses from the agent.
+2. `Agent`: This class manages agents and their actions, including evaluating search results and showing code to the user for approval.
+3. `search_files`: This function searches the filesystem for existing tools or templates.
+4. `evaluate_search_results`: This method evaluates search results from the `search_files` function and decides whether to use an existing file or create a new tool.
+5. `fill_in_the_blanks`: This function prompts the user to fill in placeholder variables in the custom tool template.
+6. `approve_code`: This method shows the code to the user for approval and stores or rewrites the work.
+
+Remember, the application should start by searching the Langchain library as well as its own stored database for an existing tool that fits the user criteria, or the template for creating a custom utility. The app should then propose an initial schema for a custom tool, and prompt the user to fill in placeholder variables. Based on the user's feedback, the app should output the changed template.
+
+
